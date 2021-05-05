@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/tonnytg/std-grpc-golang/pb/pb"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 )
 
@@ -17,6 +18,7 @@ func main()  {
 	defer connection.Close()
 	client := pb.NewUserServiceClient(connection)
 	AddUser(client)
+	AddUserVerbose(client)
 }
 
 func AddUser( client pb.UserServiceClient)  {
@@ -30,4 +32,33 @@ func AddUser( client pb.UserServiceClient)  {
 		log.Fatal("Could not make gRPC request: %v", err)
 	}
 	fmt.Println(res)
+}
+
+func AddUserVerbose(client pb.UserServiceClient)  {
+
+	req := &pb.User{
+		Id: "0",
+		Name: "Joao",
+		Email: "tonnytg@gmail.com",
+	}
+
+	responseSteam, err := client.AddUserVerbose(context.Background(), req)
+	if err != nil {
+		log.Fatalf( "Could not make gRPC request %v", err)
+	}
+
+	for {
+		stream, err := responseSteam.Recv()
+
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Could not receive: %v", err)
+		}
+
+		fmt.Println("Status: ", stream.Status, " - ", stream.GetUser())
+
+	}
+	
 }
