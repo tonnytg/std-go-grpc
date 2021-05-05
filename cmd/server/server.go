@@ -12,7 +12,7 @@ import (
 func main()  {
 	listen, err := net.Listen("tcp", "localhost:50051")
 	if err != nil {
-		log.Fatal("Could not connect: %v", err)
+		log.Fatalf("Could not connect: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
@@ -22,6 +22,6 @@ func main()  {
 	reflection.Register(grpcServer)
 
 	if err := grpcServer.Serve(listen); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("Could not connect: %v", err)
 	}
 }
